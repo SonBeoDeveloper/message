@@ -10,6 +10,9 @@ import Link from "next/link"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import ProfileDialogContent from "@/components/profile-dialog-content"
+import { useQuery } from "convex/react"
+import { api } from '../../convex/_generated/api';
+import { useUser } from "@clerk/clerk-react"
 
 
 type NavigationBarProps = {
@@ -18,6 +21,9 @@ type NavigationBarProps = {
 
 export const NavigationBar: FC<NavigationBarProps> = ({ trigger }) => {
     const pathName = usePathname();
+    const { user } = useUser()
+    const userDetails = useQuery(api.status.get, { clerkId: user?.id! })
+    console.log(userDetails);
 
     const menuItems = useMemo(() => [
         { icon: MessageCircle, label: 'Chat', path: '/chats' },
@@ -59,8 +65,8 @@ export const NavigationBar: FC<NavigationBarProps> = ({ trigger }) => {
                         <NavigationMenu orientation='vertical'>
                             <DialogTrigger>
                                 <Avatar>
-                                    <AvatarImage src='https://github.com/shadcn.png' />
-                                    <AvatarFallback>User</AvatarFallback>
+                                    <AvatarImage src={userDetails?.imageUrl} />
+                                    <AvatarFallback>{userDetails?.username[0]}</AvatarFallback>
                                 </Avatar>
                             </DialogTrigger>
                             <DialogContent>
